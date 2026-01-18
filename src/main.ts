@@ -1,18 +1,17 @@
-import './scss/styles.scss';
-import { apiProducts } from '../src/utils/data.ts';
-import { MainCatalog } from './components/base/Models/MainCatalog.ts';
-import { Cart } from './components/base/Models/Cart.ts';
-import { Buyer } from './components/base/Models/Buyer.ts';
-import { Api } from './components/base/Models/Api.ts';
-import { API_URL } from '../src/utils/constants.ts';
-
+import "./scss/styles.scss";
+import { apiProducts } from "../src/utils/data.ts";
+import { MainCatalog } from "./components/base/Models/MainCatalog.ts";
+import { Cart } from "./components/base/Models/Cart.ts";
+import { Buyer } from "./components/base/Models/Buyer.ts";
+import { Api } from "./components/base/Models/Api.ts";
+import { API_URL } from "../src/utils/constants.ts";
 
 console.log(apiProducts);
 
 //тестирование класса MainCatalog
-const productsModel  = new MainCatalog(apiProducts.items, apiProducts.items[0]);
-productsModel.setProducts(apiProducts.items); 
-let products = productsModel.getProducts(); 
+const productsModel = new MainCatalog(apiProducts.items, apiProducts.items[0]);
+productsModel.setProducts(apiProducts.items);
+let products = productsModel.getProducts();
 let selectedProduct = productsModel.getSelectedProduct();
 console.log(products);
 console.log(selectedProduct);
@@ -33,7 +32,7 @@ const checkItem = testCart.checkCart(selectedProduct);
 console.log(checkItem);
 
 //тестирование класса Buyer
-const testBuyer = new Buyer('card', 'Moscow', 'arch@true.com', '+73456789')
+const testBuyer = new Buyer("card", "Moscow", "arch@true.com", "+73456789");
 let testData = testBuyer.getData();
 
 console.log(testData);
@@ -53,7 +52,7 @@ console.log(isEmailValid);
 let isPhoneValid = testBuyer.validatePhone();
 console.log(isPhoneValid);
 
-testBuyer.setData('card', 'Moscow', 'arch@true.com', '+73456789')
+testBuyer.setData("card", "Moscow", "arch@true.com", "+73456789");
 testData = testBuyer.getData();
 
 console.log(testData);
@@ -76,19 +75,21 @@ let testGetApi = await api.getData();
 console.log(testGetApi.items);
 
 let serverTestData = testGetApi.items;
-productsModel.setProducts(serverTestData); 
-products = productsModel.getProducts(); 
+productsModel.setProducts(serverTestData);
+products = productsModel.getProducts();
 console.log(products);
 
 const apiPostData = {
-    payment: 'online',
-    email: 'any email',
-    phone: '+1236789',
-    address: 'Milan',
-    total: 2200,
-    items: ["854cef69-976d-4c2a-a18c-2aa45046c390",
-            "c101ab44-ed99-4a54-990d-47aa2bb4e7d9"]
-}
+  payment: "online",
+  email: "any email",
+  phone: "+1236789",
+  address: "Milan",
+  total: 2200,
+  items: [
+    "854cef69-976d-4c2a-a18c-2aa45046c390",
+    "c101ab44-ed99-4a54-990d-47aa2bb4e7d9",
+  ],
+};
 
 let testPostApi = await api.postData(apiPostData);
 console.log(testPostApi);

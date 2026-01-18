@@ -10,42 +10,41 @@ getData - получает данные с сервера
 postData - отправляет на сервер данные покупателя
 */
 
-import {  postApi } from '../../../types/index.js';
-
+import { postApi } from "../../../types/index.js";
 
 export class Api {
+  protected baseLink: string;
 
-    protected baseLink: string;
+  constructor(baseLink: string) {
+    this.baseLink = baseLink;
+  }
 
-    constructor(baseLink: string) {
-        this.baseLink = baseLink;
+  // метод getData получает с сервера данные о товарах и возвращает массив с данными
+  async getData() {
+    const response = await fetch(`${this.baseLink}/product/`);
+    if (!response.ok) {
+      throw new Error(
+        `Ошибка получения данных с сервера: ${response.status} ${response.statusText}`,
+      );
     }
+    return response.json();
+  }
 
-    // метод getData получает с сервера данные о товарах и возвращает массив с данными
-    async getData() {
-        const response = await fetch(`${this.baseLink}/product/`);
-        if (!response.ok) {
-            throw new Error(`Ошибка получения данных с сервера: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-    }
+  // метод postData отправляет на сервер данные заполненые покупателем и возвращает результат отправки
+  async postData(data: postApi) {
+    const response = await fetch(`${this.baseLink}/order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-    // метод postData отправляет на сервер данные заполненые покупателем и возвращает результат отправки
-    async postData(data: postApi) {
-        const response = await fetch(`${this.baseLink}/order`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-    
-        if (!response.ok) {
-            throw new Error(`Ошибка отправки данных на сервер: ${response.status} ${response.statusText}`)
-        }
-        return response.json();
-    
+    if (!response.ok) {
+      throw new Error(
+        `Ошибка отправки данных на сервер: ${response.status} ${response.statusText}`,
+      );
     }
+    return response.json();
+  }
 }
-
-;
