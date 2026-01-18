@@ -17,7 +17,7 @@ export interface IProduct {
 
 
 export interface IBuyer {
-    payment: 'string' | null;
+    payment: string | null;
     email: string;
     phone: string;
     address: string

@@ -32,7 +32,7 @@ export class Cart {
     //метод calculateTotalPrice считает общую стоимость всех товаров в корзине
     calculateTotalPrice(): number {
         let total: number  = this.cartProducts.reduce((totalPrice, item) => {
-            totalPrice =  totalPrice + item.price;
+            totalPrice =  totalPrice + (item.price ?? 0);
             return totalPrice;
         }, 0)
         return total;

@@ -1,35 +1,13 @@
-/*class Buyer
-
-Payment method: card | cash | null
-Address: string
-Email: string
-Phone number: string
-
----methods---
-
-getData - получить данные заполненные пользователем
-возвращает : IBuyer
-
-validateData - проверяет данные и возвращает результат проверки
-Принимает заполненные данные : IBuyer
-Возвращает результат проверки 
-
-clearData - удаляет данные покупателя
-
-saveData - сохраняет данные покупателя
-: IBuyer
-*/
-
 import { IBuyer } from '../../../types/index.js';
 
 export class Buyer {
 
-    protected payment: 'string' | null = null;
+    protected payment: string | null = null;
     protected address: string = '';
     protected email: string = '';
     protected  phone: string = '';
 
-    constructor(payment: 'string' | null, address: string, email: string, phone: string) {
+    constructor(payment: string | null, address: string, email: string, phone: string) {
         this.payment = payment;
         this.address = address;
         this.email = email;
@@ -95,7 +73,7 @@ export class Buyer {
     }
 
     //метод saveData сохраняет данные покупателя
-    setData(payment: 'string' | null, address: string, email: string, phone: string) {
+    setData(payment: string | null, address: string, email: string, phone: string) {
         this.payment = payment;
         this.address = address;
         this.email = email;
