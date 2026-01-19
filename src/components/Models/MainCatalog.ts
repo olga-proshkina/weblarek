@@ -1,4 +1,4 @@
-import { IProduct } from "../../../types/index.js";
+import { IProduct } from "../../types/index.js";
 
 export class MainCatalog {
   protected products: IProduct[]; //массив всех товаров на главной странице

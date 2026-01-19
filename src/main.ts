@@ -1,10 +1,9 @@
 import "./scss/styles.scss";
 import { apiProducts } from "../src/utils/data.ts";
-import { MainCatalog } from "./components/base/Models/MainCatalog.ts";
-import { Cart } from "./components/base/Models/Cart.ts";
-import { Buyer } from "./components/base/Models/Buyer.ts";
-import { Api } from "./components/base/Models/Api.ts";
-import { API_URL } from "../src/utils/constants.ts";
+import { MainCatalog } from "./components/Models/MainCatalog.ts";
+import { Cart } from "./components/Models/Cart.ts";
+import { Buyer } from "./components/Models/Buyer.ts";
+import { WebLarekApi } from "./components/Models/WebLarekApi.ts";
 
 console.log(apiProducts);
 
@@ -32,53 +31,46 @@ const checkItem = testCart.checkCart(selectedProduct);
 console.log(checkItem);
 
 //тестирование класса Buyer
-const testBuyer = new Buyer("card", "Moscow", "arch@true.com", "+73456789");
-let testData = testBuyer.getData();
+const testBuyer = new Buyer("1", "2", "3", "4");
+const testData = testBuyer.getData();
 
 console.log(testData);
+
+const isPaymentValid = testBuyer.validatePayment();
+console.log(isPaymentValid);
+
+const isAddressValid = testBuyer.validateAddress();
+console.log(isAddressValid);
+
+const isEmailValid = testBuyer.validateEmail();
+console.log(isEmailValid);
+
+const isPhoneValid = testBuyer.validatePhone();
+console.log(isPhoneValid);
+
+testBuyer.setPayment("card");
+testBuyer.setAddress("Moscow");
+testBuyer.setEmail("arch@true.com");
+testBuyer.setPhone("+73456789");
 
 testBuyer.clearData();
-console.log(testBuyer);
+const testEmptyData = testBuyer.getData();
 
-let isPaymentValid = testBuyer.validatePayment();
-console.log(isPaymentValid);
+console.log(testEmptyData);
 
-let isAddressValid = testBuyer.validateAddress();
-console.log(isAddressValid);
+const isEmptyPaymentValid = testBuyer.validatePayment();
+console.log(isEmptyPaymentValid);
 
-let isEmailValid = testBuyer.validateEmail();
-console.log(isEmailValid);
+const isEmptyAddressValid = testBuyer.validateAddress();
+console.log(isEmptyAddressValid);
 
-let isPhoneValid = testBuyer.validatePhone();
-console.log(isPhoneValid);
+const isEmptyEmailValid = testBuyer.validateEmail();
+console.log(isEmptyEmailValid);
 
-testBuyer.setData("card", "Moscow", "arch@true.com", "+73456789");
-testData = testBuyer.getData();
-
-console.log(testData);
-
-isPaymentValid = testBuyer.validatePayment();
-console.log(isPaymentValid);
-
-isAddressValid = testBuyer.validateAddress();
-console.log(isAddressValid);
-
-isEmailValid = testBuyer.validateEmail();
-console.log(isEmailValid);
-
-isPhoneValid = testBuyer.validatePhone();
-console.log(isPhoneValid);
+const isEmptyPhoneValid = testBuyer.validatePhone();
+console.log(isEmptyPhoneValid);
 
 //тестирование класса Api
-const api = new Api(API_URL);
-let testGetApi = await api.getData();
-console.log(testGetApi.items);
-
-let serverTestData = testGetApi.items;
-productsModel.setProducts(serverTestData);
-products = productsModel.getProducts();
-console.log(products);
-
 const apiPostData = {
   payment: "online",
   email: "any email",
@@ -91,5 +83,14 @@ const apiPostData = {
   ],
 };
 
-let testPostApi = await api.postData(apiPostData);
+const api = new WebLarekApi();
+let testGetApi = await api.getProducts();
+console.log(testGetApi.items);
+
+let serverTestData = testGetApi.items;
+productsModel.setProducts(serverTestData);
+products = productsModel.getProducts();
+console.log(products);
+
+let testPostApi = await api.postOrder(apiPostData);
 console.log(testPostApi);

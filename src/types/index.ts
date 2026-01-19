@@ -25,7 +25,19 @@ export interface IBuyer {
   address: string;
 }
 
-export type postApi = IBuyer & {
-  total: number;
+export type PostOrderData = IBuyer & {
+  total: number,
   items: string[];
 };
+
+export type PostOrderDataResult = {
+   id: string,
+   total: number
+}
+
+export type GetProduct = {
+  items: IProduct[],
+  total: number
+}
+
+export type ValidationResult = { validationMessage: string }

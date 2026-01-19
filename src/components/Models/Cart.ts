@@ -1,4 +1,4 @@
-import { IProduct } from "../../../types/index.js";
+import { IProduct } from "../../types/index.js";
 
 export class Cart {
   protected cartProducts: IProduct[];
@@ -32,7 +32,7 @@ export class Cart {
 
   //метод calculateTotalPrice считает общую стоимость всех товаров в корзине
   calculateTotalPrice(): number {
-    let total: number = this.cartProducts.reduce((totalPrice, item) => {
+    const total: number = this.cartProducts.reduce((totalPrice, item) => {
       totalPrice = totalPrice + (item.price ?? 0);
       return totalPrice;
     }, 0);
@@ -41,11 +41,7 @@ export class Cart {
 
   // метод checkCart проверяет наличие товара в корзине
   checkCart(product: IProduct): boolean {
-    let result = false;
-    const findItem = this.cartProducts.findIndex((item) => item === product);
-    if (findItem) {
-      result = true;
-    }
-    return result;
+    const findItem = this.cartProducts.some((item) => item === product);
+    return findItem;
   }
 }

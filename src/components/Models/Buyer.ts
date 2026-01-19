@@ -1,10 +1,10 @@
-import { IBuyer } from "../../../types/index.js";
+import { IBuyer, ValidationResult } from "../../types/index.js";
 
 export class Buyer {
-  protected payment: string | null = null;
-  protected address: string = "";
-  protected email: string = "";
-  protected phone: string = "";
+  protected payment: string | null;
+  protected address: string;
+  protected email: string;
+  protected phone: string;
 
   constructor(
     payment: string | null,
@@ -29,40 +29,36 @@ export class Buyer {
   }
 
   // метод validatePayment проверяет заполнен ли способ оплаты
-  validatePayment(): { isValid: boolean; validationMessage: string | null } {
-    let validationResult = { isValid: true, validationMessage: "" };
+  validatePayment(): ValidationResult {
+    let validationResult = { validationMessage: "" };
     if (!this.payment) {
-      validationResult.isValid = false;
       validationResult.validationMessage = "Не выбран вид оплаты";
     }
     return validationResult;
   }
 
   // validateAddress
-  validateAddress(): { isValid: boolean; validationMessage: string | null } {
-    let validationResult = { isValid: true, validationMessage: "" };
+  validateAddress(): ValidationResult {
+    let validationResult = { validationMessage: "" };
     if (!this.address) {
-      validationResult.isValid = false;
       validationResult.validationMessage = "Укажите адрес";
     }
     return validationResult;
   }
 
   // метод validateEmail проверяет заполнено ли поле емайл
-  validateEmail(): { isValid: boolean; validationMessage: string | null } {
-    let validationResult = { isValid: true, validationMessage: "" };
+  validateEmail(): ValidationResult {
+    let validationResult = { validationMessage: "" };
     if (!this.email) {
-      validationResult.isValid = false;
       validationResult.validationMessage = "Укажите email";
     }
     return validationResult;
   }
 
   // метод validatePhone проверяет заполнено ли поле номер телефон
-  validatePhone(): { isValid: boolean; validationMessage: string | null } {
-    let validationResult = { isValid: true, validationMessage: "" };
+  validatePhone(): ValidationResult {
+    let validationResult = { validationMessage: "" };
     if (!this.phone) {
-      validationResult.isValid = false;
       validationResult.validationMessage = "Укажите номер телефона";
     }
     return validationResult;
@@ -76,16 +72,20 @@ export class Buyer {
     this.phone = "";
   }
 
-  //метод saveData сохраняет данные покупателя
-  setData(
-    payment: string | null,
-    address: string,
-    email: string,
-    phone: string,
-  ) {
+  //методы setData сохраняют данные покупателя
+  setPayment(payment: string | null) {
     this.payment = payment;
+  }
+
+  setAddress(address: string) {
     this.address = address;
+  }
+
+  setEmail(email: string) {
     this.email = email;
+  }
+
+  setPhone(phone: string) {
     this.phone = phone;
   }
 }
