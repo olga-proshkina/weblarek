@@ -30,7 +30,7 @@ export class Buyer {
 
   // метод validatePayment проверяет заполнен ли способ оплаты
   validatePayment(): ValidationResult {
-    let validationResult = { validationMessage: "" };
+    const validationResult = { validationMessage: "" };
     if (!this.payment) {
       validationResult.validationMessage = "Не выбран вид оплаты";
     }
@@ -39,7 +39,7 @@ export class Buyer {
 
   // validateAddress
   validateAddress(): ValidationResult {
-    let validationResult = { validationMessage: "" };
+    const validationResult = { validationMessage: "" };
     if (!this.address) {
       validationResult.validationMessage = "Укажите адрес";
     }
@@ -48,7 +48,7 @@ export class Buyer {
 
   // метод validateEmail проверяет заполнено ли поле емайл
   validateEmail(): ValidationResult {
-    let validationResult = { validationMessage: "" };
+    const validationResult = { validationMessage: "" };
     if (!this.email) {
       validationResult.validationMessage = "Укажите email";
     }
@@ -57,7 +57,7 @@ export class Buyer {
 
   // метод validatePhone проверяет заполнено ли поле номер телефон
   validatePhone(): ValidationResult {
-    let validationResult = { validationMessage: "" };
+    const validationResult = { validationMessage: "" };
     if (!this.phone) {
       validationResult.validationMessage = "Укажите номер телефона";
     }

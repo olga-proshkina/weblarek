@@ -84,13 +84,13 @@ const apiPostData = {
 };
 
 const api = new WebLarekApi();
-let testGetApi = await api.getProducts();
+const testGetApi = await api.getProducts();
 console.log(testGetApi.items);
 
-let serverTestData = testGetApi.items;
+const serverTestData = testGetApi.items;
 productsModel.setProducts(serverTestData);
 products = productsModel.getProducts();
 console.log(products);
 
-let testPostApi = await api.postOrder(apiPostData);
+const testPostApi = await api.postOrder(apiPostData);
 console.log(testPostApi);
