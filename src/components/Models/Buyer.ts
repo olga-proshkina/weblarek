@@ -6,16 +6,11 @@ export class Buyer {
   protected email: string;
   protected phone: string;
 
-  constructor(
-    payment: string | null,
-    address: string,
-    email: string,
-    phone: string,
-  ) {
-    this.payment = payment;
-    this.address = address;
-    this.email = email;
-    this.phone = phone;
+  constructor() {
+    this.payment = null;
+    this.address = '';
+    this.email = '';
+    this.phone = '';
   }
 
   //метод getData позволяет получить данные покупателя

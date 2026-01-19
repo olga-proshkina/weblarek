@@ -31,11 +31,18 @@ const checkItem = testCart.checkCart(selectedProduct);
 console.log(checkItem);
 
 //тестирование класса Buyer
-const testBuyer = new Buyer("1", "2", "3", "4");
+const testBuyer = new Buyer();
+
+testBuyer.setPayment("card");
+testBuyer.setAddress("Moscow");
+testBuyer.setEmail("arch@true.com");
+testBuyer.setPhone("+73456789");
+
 const testData = testBuyer.getData();
 
 console.log(testData);
 
+//тестирование валидации данных
 const isPaymentValid = testBuyer.validatePayment();
 console.log(isPaymentValid);
 
@@ -48,11 +55,7 @@ console.log(isEmailValid);
 const isPhoneValid = testBuyer.validatePhone();
 console.log(isPhoneValid);
 
-testBuyer.setPayment("card");
-testBuyer.setAddress("Moscow");
-testBuyer.setEmail("arch@true.com");
-testBuyer.setPhone("+73456789");
-
+//тестирование валидации пустых данных
 testBuyer.clearData();
 const testEmptyData = testBuyer.getData();
 
