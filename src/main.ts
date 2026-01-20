@@ -4,6 +4,8 @@ import { MainCatalog } from "./components/Models/MainCatalog.ts";
 import { Cart } from "./components/Models/Cart.ts";
 import { Buyer } from "./components/Models/Buyer.ts";
 import { WebLarekApi } from "./components/Models/WebLarekApi.ts";
+import { API_URL } from "./utils/constants.js";
+import { Api } from "./components/base/Api.js";
 
 console.log(apiProducts);
 
@@ -86,7 +88,14 @@ const apiPostData = {
   ],
 };
 
-const api = new WebLarekApi();
+
+const apiForWebLarek = new Api(API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+const api = new WebLarekApi(apiForWebLarek);
 const testGetApi = await api.getProducts();
 console.log(testGetApi.items);
 

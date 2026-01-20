@@ -4,25 +4,23 @@ import {
   GetProduct,
 } from "../../types/index.js";
 import { Api } from "../base/Api.js";
-import { API_URL } from "../../utils/constants.js";
 
-const apiForWebLarek = new Api(API_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+
 
 export class WebLarekApi {
+  protected api;
+   constructor(api: Api) {
+    this.api = api;
+   }
   // метод getProducts получает с сервера данные о товарах и возвращает массив с данными
   async getProducts(): Promise<GetProduct> {
-    const products: GetProduct = await apiForWebLarek.get(`/product/`);
+    const products = await this.api.get<GetProduct>(`/product/`);
     return products;
   }
 
   // метод postOrder отправляет на сервер данные заполненые покупателем и возвращает результат отправки
   async postOrder(data: PostOrderData): Promise<PostOrderDataResult> {
-    const result: PostOrderDataResult = await apiForWebLarek.post(
+    const result = await this.api.post<PostOrderDataResult>(
       `/order`,
       data,
     );
