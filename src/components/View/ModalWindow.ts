@@ -1,0 +1,24 @@
+import { Component } from "../base/Component";
+import { ensureElement } from "../../utils/utils";
+import { IEvents } from "../base/Events";
+
+interface IModal {
+}
+
+export class ModalWindow extends Component<IModal> {
+    modalCloseButton: HTMLButtonElement;
+    contentModal: HTMLElement;
+
+    constructor(protected events: IEvents, container: HTMLElement) {
+        super(container);
+        this.modalCloseButton = ensureElement<HTMLButtonElement>('modal__close', this.container);
+        this.contentModal = ensureElement<HTMLElement>('modal__content', this.container);
+
+        this.modalCloseButton.addEventListener('click', () => {
+            this.events.emit('modal:close');
+        })
+    }
+    set content(data: HTMLElement) {
+        this.contentModal.appendChild(data);
+    }
+}
