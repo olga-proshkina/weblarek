@@ -1,12 +1,13 @@
 import { IProduct } from "../../types/index.js";
+import { IEvents } from "../base/Events.js";
 
 export class MainCatalog {
   protected products: IProduct[]; //массив всех товаров на главной странице
   protected selectedProduct: IProduct; //выбранный товар
 
-  constructor(products: IProduct[], selectedProduct: IProduct) {
-    this.products = products;
-    this.selectedProduct = selectedProduct;
+  constructor(protected events: IEvents) {
+    this.products = [];
+    this.selectedProduct = {} as IProduct;
   }
 
   // метод getProducts позволяет получит массив всех товаров на главной странице
@@ -17,6 +18,7 @@ export class MainCatalog {
   // метод setProducts сохраняет массив всех товаров на главной странице
   setProducts(items: IProduct[]) {
     this.products = items;
+    this.events.emit('catalog changed');
   }
 
   // метод getSelectedProduct позволяет получить товар выбранный пользователем
@@ -27,5 +29,6 @@ export class MainCatalog {
   // метод setSelectedProduct сохраняет товар выбранный пльзователем
   setSelectedProduct(product: IProduct) {
     this.selectedProduct = product;
+    this.events.emit('selected product changed');
   }
 }

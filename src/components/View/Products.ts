@@ -3,25 +3,25 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-class Product extends Component<IProduct> {
-    productTitle: HTMLElement;
+class Product<T> extends Component<IProduct & T> {
+    productTitle: HTMLHeadingElement;
     productPrice: HTMLElement;
 
     constructor(container: HTMLElement) {
         super(container);
-        this.productTitle = ensureElement<HTMLElement>('card__title', this.container);
-        this.productPrice = ensureElement<HTMLElement>('card__price', this.container);
+        this.productTitle = ensureElement<HTMLHeadingElement>('.card__title', this.container);
+        this.productPrice = ensureElement<HTMLElement>('.card__price', this.container);
     }
 
     set title(title: string) {
         this.productTitle.textContent = title;
     }
     set price(price: number) {
-        this.productPrice.textContent = String(price);
+        this.productPrice.textContent = String(price) + ' синапсов';
     }
 }
 
-export class ProductGalleryView extends Product {
+export class ProductGalleryView extends Product<IProduct> {
 
     productOpenCardButton: HTMLButtonElement;
     productCategory: HTMLElement;
@@ -29,9 +29,9 @@ export class ProductGalleryView extends Product {
     
     constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
-        this.productOpenCardButton = ensureElement<HTMLButtonElement>('gallery__item', this.container);
-        this.productCategory = ensureElement<HTMLElement>('card__category', this.container);
-        this.productImage = ensureElement<HTMLImageElement>('card__image', this.container);
+        this.productOpenCardButton = this.container as HTMLButtonElement;
+        this.productCategory = ensureElement<HTMLElement>('.card__category', this.container);
+        this.productImage = ensureElement<HTMLImageElement>('.card__image', this.container);
 
         this.productOpenCardButton.addEventListener('click', () => {
             this.events.emit('product:open');
@@ -41,14 +41,14 @@ export class ProductGalleryView extends Product {
         this.productCategory.textContent = category;
     }
     set imageLink(src: string) {
-        this.productImage.src = src;
+        this.productImage.src = './src/images' + src;
     }
     set imageDescription(alt: string) {
         this.productImage.alt = alt;
     }
 }
 
-export class ProductPreview extends Product {
+export class ProductPreview extends Product<IProduct> {
     productCategory: HTMLElement;
     productImage: HTMLImageElement;
     productDescription: HTMLElement;
@@ -56,10 +56,10 @@ export class ProductPreview extends Product {
 
     constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
-        this.productCategory = ensureElement<HTMLElement>('card__category', this.container);
-        this.productImage = ensureElement<HTMLImageElement>('card__image', this.container);
-        this.productDescription = ensureElement<HTMLElement>('card__text', this.container);
-        this.productAddRemoveButton = ensureElement<HTMLButtonElement>('card__button', this.container);
+        this.productCategory = ensureElement<HTMLElement>('.card__category', this.container);
+        this.productImage = ensureElement<HTMLImageElement>('.card__image', this.container);
+        this.productDescription = ensureElement<HTMLElement>('.card__text', this.container);
+        this.productAddRemoveButton = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
         this.productAddRemoveButton.addEventListener('click', () => {
             this.events.emit('cart:addremove');
@@ -82,14 +82,14 @@ export class ProductPreview extends Product {
     }
 }
 
-export class ProductCartView extends Product {
+export class ProductCartView extends Product<IProduct> {
     productIndex: HTMLElement;
     productRemoveButton: HTMLButtonElement;
 
     constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
-        this.productIndex = ensureElement<HTMLElement>('basket__item-index', this.container);
-        this.productRemoveButton = ensureElement<HTMLButtonElement>('basket__item-delete', this.container);
+        this.productIndex = ensureElement<HTMLElement>('.basket__item-index', this.container);
+        this.productRemoveButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
 
         this.productRemoveButton.addEventListener('click', () => {
            this.events.emit('cart:remove');

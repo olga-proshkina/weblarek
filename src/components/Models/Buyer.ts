@@ -1,12 +1,14 @@
 import { IBuyer, ValidationResult } from "../../types/index.js";
+import { IEvents } from "../base/Events.js";
 
 export class Buyer {
   protected payment: string | null;
   protected address: string;
   protected email: string;
   protected phone: string;
+  
 
-  constructor() {
+  constructor(protected events: IEvents) {
     this.payment = null;
     this.address = '';
     this.email = '';
@@ -65,22 +67,27 @@ export class Buyer {
     this.address = "";
     this.email = "";
     this.phone = "";
+    this.events.emit('buyer data change');
   }
 
   //методы setData сохраняют данные покупателя
   setPayment(payment: string | null) {
     this.payment = payment;
+    this.events.emit('buyer data change');
   }
 
   setAddress(address: string) {
     this.address = address;
+    this.events.emit('buyer data change');
   }
 
   setEmail(email: string) {
     this.email = email;
+    this.events.emit('buyer data change');
   }
 
   setPhone(phone: string) {
     this.phone = phone;
+    this.events.emit('buyer data change');
   }
 }

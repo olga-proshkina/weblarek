@@ -10,13 +10,13 @@ export class Gallery extends Component<IGallery> {
 
     constructor(container: HTMLElement) {
         super(container);
-        this.gallery = ensureElement<HTMLElement>('gallery', this.container);
+        this.gallery = ensureElement<HTMLElement>('.gallery', this.container);
     }
 
-    set content(content: HTMLElement[]) {
-        content.forEach(item => {
+    set content(item: HTMLElement[]) {
+        item.forEach(item => {  
             this.gallery.appendChild(item);
-        })
-    }
+    })
+}
 }
 

@@ -8,105 +8,45 @@ import { API_URL } from "./utils/constants.js";
 import { Api } from "./components/base/Api.js";
 import { Header } from "./components/View/Header.ts";
 import { Gallery } from "./components/View/Gallery.ts";
-import { ensureElement } from "./utils/utils.ts";
+import { cloneTemplate, ensureElement } from "./utils/utils.ts";
+import { ProductGalleryView } from "./components/View/Products.ts";
+import { EventEmitter } from "./components/base/Events.ts";
 
-// console.log(apiProducts);
+// инициализация API и системы событий
+const events = new EventEmitter();
+const api = new Api(API_URL);
+const webLarekApi = new WebLarekApi(api);
 
-// //тестирование класса MainCatalog
-// const productsModel = new MainCatalog(apiProducts.items, apiProducts.items[0]);
-// productsModel.setProducts(apiProducts.items);
-// let products = productsModel.getProducts();
-// let selectedProduct = productsModel.getSelectedProduct();
-// console.log(products);
-// console.log(selectedProduct);
+// инициализация моделей данных
+const catalogModel = new MainCatalog(events);
+const cartModel = new Cart(events);
+const buyerModel = new Buyer(events);
 
-// //тестирование класса Cart
-// const testCart = new Cart(apiProducts.items);
-// testCart.addToCart(selectedProduct);
-// console.log(testCart);
-// testCart.removeFromCart(selectedProduct);
-// console.log(testCart);
-// const quantity = testCart.getQuantity();
-// console.log(quantity);
-// const productsInCart = testCart.getProductsFromCart();
-// console.log(productsInCart);
-// const total = testCart.calculateTotalPrice();
-// console.log(total);
-// const checkItem = testCart.checkCart(selectedProduct);
-// console.log(checkItem);
+const page = ensureElement<HTMLElement>('.page');
 
-// //тестирование класса Buyer
-// const testBuyer = new Buyer();
+const gallery = new Gallery(page);
 
-// testBuyer.setPayment("card");
-// testBuyer.setAddress("Moscow");
-// testBuyer.setEmail("arch@true.com");
-// testBuyer.setPhone("+73456789");
+//получаем данные о товарах с сервера
+const products = await webLarekApi.getProducts();
+const productsData = products.items;
 
-// const testData = testBuyer.getData();
-
-// console.log(testData);
-
-// //тестирование валидации данных
-// const isPaymentValid = testBuyer.validatePayment();
-// console.log(isPaymentValid);
-
-// const isAddressValid = testBuyer.validateAddress();
-// console.log(isAddressValid);
-
-// const isEmailValid = testBuyer.validateEmail();
-// console.log(isEmailValid);
-
-// const isPhoneValid = testBuyer.validatePhone();
-// console.log(isPhoneValid);
-
-// //тестирование валидации пустых данных
-// testBuyer.clearData();
-// const testEmptyData = testBuyer.getData();
-
-// console.log(testEmptyData);
-
-// const isEmptyPaymentValid = testBuyer.validatePayment();
-// console.log(isEmptyPaymentValid);
-
-// const isEmptyAddressValid = testBuyer.validateAddress();
-// console.log(isEmptyAddressValid);
-
-// const isEmptyEmailValid = testBuyer.validateEmail();
-// console.log(isEmptyEmailValid);
-
-// const isEmptyPhoneValid = testBuyer.validatePhone();
-// console.log(isEmptyPhoneValid);
-
-// //тестирование класса Api
-// const apiPostData = {
-//   payment: "online",
-//   email: "any email",
-//   phone: "+1236789",
-//   address: "Milan",
-//   total: 2200,
-//   items: [
-//     "854cef69-976d-4c2a-a18c-2aa45046c390",
-//     "c101ab44-ed99-4a54-990d-47aa2bb4e7d9",
-//   ],
-// };
-
-
-// const apiForWebLarek = new Api(API_URL, {
-//   method: "POST",
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
-// const api = new WebLarekApi(apiForWebLarek);
-// const testGetApi = await api.getProducts();
-// console.log(testGetApi.items);
-
-// const serverTestData = testGetApi.items;
-// productsModel.setProducts(serverTestData);
-// products = productsModel.getProducts();
-// console.log(products);
-
-// const testPostApi = await api.postOrder(apiPostData);
-// console.log(testPostApi);
+//создаем карточки товаров 
+events.on('catalog changed', () => {
+    let productsHTML: HTMLElement[] = [];
+    productsData.forEach(item => {
+        const container = cloneTemplate('#card-catalog');
+        const productGalleryView = new ProductGalleryView(events, container);
+        productGalleryView.category = item.category;
+        productGalleryView.imageLink = item.image;
+        productGalleryView.imageDescription = item.title;
+        if (typeof item.price === 'number') {
+          productGalleryView.price = item.price;
+        } else {
+             productGalleryView.price = 0;
+        }
+        productGalleryView.title = item.title;
+        productsHTML.push(productGalleryView.render(container));
+        gallery.content = productsHTML;
+    })
+})
 

@@ -1,15 +1,17 @@
 import { IProduct } from "../../types/index.js";
+import { IEvents } from "../base/Events.js";
 
 export class Cart {
   protected cartProducts: IProduct[];
 
-  constructor(cartProducts: IProduct[]) {
-    this.cartProducts = cartProducts;
+  constructor(protected events: IEvents) {
+    this.cartProducts = [];
   }
 
   // метод addToCart добавляет выбранный товар в корзину
   addToCart(product: IProduct) {
     this.cartProducts.push(product);
+    this.events.emit('cart content change');
   }
 
   //метод removeFromCart удаляет выбранный товар из корзины
@@ -18,6 +20,7 @@ export class Cart {
       (item) => item === product,
     );
     this.cartProducts.splice(itemToRemove, 1);
+    this.events.emit('cart content change');
   }
 
   //метод getQuantity считает количество товаров в корзине
