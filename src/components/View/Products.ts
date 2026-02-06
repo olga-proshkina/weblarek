@@ -3,6 +3,10 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
+interface ICardActions {
+    onClick?: () => void;
+}
+
 class Product<T> extends Component<IProduct & T> {
     productTitle: HTMLHeadingElement;
     productPrice: HTMLElement;
@@ -27,15 +31,16 @@ export class ProductGalleryView extends Product<IProduct> {
     productCategory: HTMLElement;
     productImage: HTMLImageElement;
     
-    constructor(protected events: IEvents, container: HTMLElement) {
+    constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
         this.productOpenCardButton = this.container as HTMLButtonElement;
         this.productCategory = ensureElement<HTMLElement>('.card__category', this.container);
         this.productImage = ensureElement<HTMLImageElement>('.card__image', this.container);
 
-        this.productOpenCardButton.addEventListener('click', () => {
-            this.events.emit('product:open');
-        })
+        if (actions?.onClick) {
+            this.productOpenCardButton.addEventListener('click', actions.onClick);
+        }
+       
     }
     set category(category: string) {
         this.productCategory.textContent = category;
@@ -62,8 +67,9 @@ export class ProductPreview extends Product<IProduct> {
         this.productAddRemoveButton = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
         this.productAddRemoveButton.addEventListener('click', () => {
-            this.events.emit('cart:addremove');
+            this.events.emit('cart: add / remove');
         })
+        
     }
     set category(category: string) {
         this.productCategory.textContent = category;
