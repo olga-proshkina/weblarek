@@ -6,14 +6,14 @@ interface IForm {
     formErrors: string | null;
 }
 
-class Form extends Component<IForm> {
+class Form<T> extends Component<T & IForm> {
     submitButton: HTMLButtonElement;
     errors: HTMLElement;
 
     constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
-        this.submitButton = ensureElement<HTMLButtonElement>('order__button', this.container);
-        this.errors = ensureElement<HTMLElement>('form__errors', this.container);
+        this.submitButton = ensureElement<HTMLButtonElement>('.order__button', this.container);
+        this.errors = ensureElement<HTMLElement>('.form__errors', this.container);
         
         this.submitButton.addEventListener('click', () => {
             this.events.emit('form:submit');
@@ -25,7 +25,7 @@ class Form extends Component<IForm> {
     }
 }
 
-export class OrderForm extends Form {
+export class OrderForm extends Form<IForm> {
     paymentCardButton: HTMLButtonElement;
     paymentsCashButton: HTMLButtonElement;
 

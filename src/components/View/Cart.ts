@@ -7,7 +7,7 @@ interface ICart {
     products: HTMLElement[] | HTMLElement | null;
 }
 
-export class Cart extends Component<ICart> {
+export class CartView extends Component<ICart> {
    
     cartTotal: HTMLElement;
     productsCart: HTMLElement;
@@ -18,14 +18,19 @@ export class Cart extends Component<ICart> {
         this.cartTotal = ensureElement<HTMLElement>('.basket__price', this.container);
         this.productsCart = ensureElement<HTMLElement>('.basket__list', this.container);
         this.cartOrderButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
+
+        this.cartOrderButton.addEventListener('click', () => {
+            this.events.emit('cart: order');
+        })
     }
 
     set totalPrice(total: number) {
         this.cartTotal.textContent = `${total} синапсов`; 
     }
     set products(products: HTMLElement[] | HTMLElement | null) {
+        this.productsCart.replaceChildren();
         if (products instanceof HTMLElement) {
-            this.productsCart.appendChild(products);
+            this.productsCart.replaceChildren(products);
         } else if (Array.isArray(products)) {
             products.forEach(item => {
                 this.productsCart.appendChild(item);

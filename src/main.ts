@@ -13,6 +13,8 @@ import { ProductGalleryView, ProductPreview, ProductCartView } from "./component
 import { EventEmitter } from "./components/base/Events.ts";
 import { ModalWindow } from "./components/View/ModalWindow.ts";
 import { IProduct } from "./types/index.ts";
+import { CartView } from "./components/View/Cart.ts";
+import { OrderForm } from "./components/View/Order.ts";
 
 // инициализация API и системы событий
 const events = new EventEmitter();
@@ -33,45 +35,119 @@ const productsData = products.items;
 
 //создаем карточки товаров 
 events.on('catalog changed', () => {
-    let productsHTML: HTMLElement[] = [];
-    productsData.forEach(item => {
+    gallery.content = productsData.map((item) => {
         const container = cloneTemplate('#card-catalog');
         const productGalleryView = new ProductGalleryView(container, {
             onClick: () => {
-                events.emit('product:open', item);
                 catalogModel.setSelectedProduct(item);
+                events.emit('product:open', item);
             }});
-        productGalleryView.category = item.category;
-        productGalleryView.imageLink = item.image;
-        productGalleryView.imageDescription = item.title;
-        if (typeof item.price === 'number') {
-          productGalleryView.price = item.price;
-        } else {
-             productGalleryView.price = 0;
-        }
-        productGalleryView.title = item.title;
-        productsHTML.push(productGalleryView.render());
-        gallery.content = productsHTML;
-    })
-})
+        return productGalleryView.render(item);
+    });
+});
 
 catalogModel.setProducts(productsData);
 
+//создаем карточку подробного описания товара 
+const previewContainer = cloneTemplate('#card-preview');
+const previewView = new ProductPreview(events, previewContainer);
+
+//отрисовываем карточку подробного описания товара
+events.on('selected product changed', () => {
+    const selected = catalogModel.getSelectedProduct();
+    console.log(selected.price);
+     if (selected.price === null) {
+        previewView.deactivateButton();
+        previewView.button = 'Недоступно';
+    } else if (cartModel.checkCart(selected)) {
+        previewView.activateButton();
+        previewView.button = 'Удалить';
+    } else if (!cartModel.checkCart(selected)) {
+        previewView.activateButton();
+        previewView.button = 'В корзину';
+    }
+    previewView.render(selected);
+});
+
+// создаем модальное окно
+const containerModal = ensureElement('#modal-container', page);
+const modalView = new ModalWindow(events, containerModal);
+
 events.on('product:open', () => {
     const selected = catalogModel.getSelectedProduct();
-
-    const containerModal = ensureElement('#modal-container', page);
-    const modal = new ModalWindow(events, containerModal);
-    modal.show();
-
-    const containerProduct = cloneTemplate('#card-preview');
-    const product = new ProductPreview(events, containerProduct);
-    modal.content = product.render();
-    console.log(product.render(selected));
-})
+    modalView.show();
+    modalView.content = previewView.render(selected);
+      });
 
 events.on('modal:close', () => {
-    const containerModal = ensureElement('#modal-container', page);
-    const modal = new ModalWindow(events, containerModal);
-    modal.close();
+    modalView.close();
 })
+
+//создаем корзину
+const cartContainer = cloneTemplate('#basket');
+const cartView = new CartView(events, cartContainer);
+
+
+events.on('cart: add / remove', () => {
+    const selected = catalogModel.getSelectedProduct();
+    if (cartModel.checkCart(selected)) { 
+        cartModel.removeFromCart(selected);
+    }
+    else cartModel.addToCart(selected);
+    modalView.close();
+})
+
+//создаем header
+const headerContainer = ensureElement('.header', page);
+const headerView = new Header(events, headerContainer);
+
+events.on('cart content change', () => {
+    //перерисовыаем счетчик корзины в шапке
+    const cartQuantity = cartModel.getQuantity();
+    headerView.counter = cartQuantity;
+
+    //перерисовываем содержимое корзины 
+    let index: number = 0;
+    cartView.products = cartModel.getProductsFromCart().map((product) => {
+        const productCartView = new ProductCartView(cloneTemplate('#card-basket'), {
+            onClick: () => {
+            events.emit('cart: remove product', product);
+            }});
+            index++;
+        productCartView.index = index;
+        return productCartView.render(product);
+    });
+
+    //перерисовываем общую стоимость товаров в корзине
+    const totalPrice = cartModel.calculateTotalPrice();
+    cartView.totalPrice = totalPrice;
+}) 
+
+events.on('cart:open', () => {
+    modalView.show();
+    modalView.content = cartView.render();
+});
+
+events.on('cart: remove product', (product: IProduct) => {
+    cartModel.removeFromCart(product);
+});
+
+//создаем order 
+const orderView = new OrderForm(events, cloneTemplate('#order'));
+
+events.on('cart: order', () => {
+    modalView.content = orderView.render();
+})
+
+events.on('payment:card', () => {
+    buyerModel.setPayment('card'); 
+    orderView.paymentCardButton.classList.add('button_alt-active');
+    orderView.paymentsCashButton.classList.remove('button_alt-active');
+})
+
+events.on('payment:cash', () => {
+    buyerModel.setPayment('cash'); 
+    orderView.paymentCardButton.classList.remove('button_alt-active');
+    orderView.paymentsCashButton.classList.add('button_alt-active');
+})
+

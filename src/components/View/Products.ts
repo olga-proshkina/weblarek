@@ -7,6 +7,8 @@ interface ICardActions {
     onClick?: () => void;
 }
 
+
+
 class Product<T> extends Component<IProduct & T> {
     productTitle: HTMLHeadingElement;
     productPrice: HTMLElement;
@@ -20,8 +22,11 @@ class Product<T> extends Component<IProduct & T> {
     set title(title: string) {
         this.productTitle.textContent = title;
     }
-    set price(price: number) {
-        this.productPrice.textContent = String(price) + ' синапсов';
+    set price(price: number | null) {
+        if (typeof price === 'number') {
+             this.productPrice.textContent = String(price) + ' синапсов';
+        }
+        else this.productPrice.textContent = 'Бесценно';
     }
 }
 
@@ -86,20 +91,27 @@ export class ProductPreview extends Product<IProduct> {
     set button(text: string) {
         this.productAddRemoveButton.textContent = text;        
     }
+    deactivateButton() {
+        this.productAddRemoveButton.disabled = true;
+    }
+    activateButton() {
+        this.productAddRemoveButton.disabled = false;
+    }
 }
 
 export class ProductCartView extends Product<IProduct> {
     productIndex: HTMLElement;
     productRemoveButton: HTMLButtonElement;
 
-    constructor(protected events: IEvents, container: HTMLElement) {
+    constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
         this.productIndex = ensureElement<HTMLElement>('.basket__item-index', this.container);
         this.productRemoveButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
 
-        this.productRemoveButton.addEventListener('click', () => {
-           this.events.emit('cart:remove');
-        })
+        if (actions?.onClick) {
+            this.productRemoveButton.addEventListener('click', actions.onClick);
+        }
+       
     }
     set index(index: number) {
         this.productIndex.textContent = String(index);
