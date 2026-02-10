@@ -2,6 +2,7 @@ import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
+import { CDN_URL } from "../../utils/constants";
 
 interface ICardActions {
     onClick?: () => void;
@@ -51,7 +52,7 @@ export class ProductGalleryView extends Product<IProduct> {
         this.productCategory.textContent = category;
     }
     set imageLink(src: string) {
-        this.productImage.src = './src/images' + src;
+        this.productImage.src = CDN_URL + src;
     }
     set imageDescription(alt: string) {
         this.productImage.alt = alt;

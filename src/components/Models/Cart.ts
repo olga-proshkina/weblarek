@@ -47,4 +47,9 @@ export class Cart {
     const findItem = this.cartProducts.some((item) => item === product);
     return findItem;
   }
+
+  clearCart() {
+    this.cartProducts = [];
+    this.events.emit('cart content change');
+  }
 }

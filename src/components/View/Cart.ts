@@ -18,7 +18,8 @@ export class CartView extends Component<ICart> {
         this.cartTotal = ensureElement<HTMLElement>('.basket__price', this.container);
         this.productsCart = ensureElement<HTMLElement>('.basket__list', this.container);
         this.cartOrderButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
-
+        this.cartOrderButton.disabled = true;
+        
         this.cartOrderButton.addEventListener('click', () => {
             this.events.emit('cart: order');
         })
@@ -36,5 +37,11 @@ export class CartView extends Component<ICart> {
                 this.productsCart.appendChild(item);
             })
         }
+    }
+    deactivateButton(): void {
+        this.cartOrderButton.disabled = true;
+    }
+    activateButton(): void {
+        this.cartOrderButton.disabled = false;
     }
 }

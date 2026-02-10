@@ -12,9 +12,10 @@ import { cloneTemplate, ensureElement } from "./utils/utils.ts";
 import { ProductGalleryView, ProductPreview, ProductCartView } from "./components/View/Products.ts";
 import { EventEmitter } from "./components/base/Events.ts";
 import { ModalWindow } from "./components/View/ModalWindow.ts";
-import { IProduct } from "./types/index.ts";
+import { IBuyer, IProduct, PostOrderData } from "./types/index.ts";
 import { CartView } from "./components/View/Cart.ts";
-import { OrderForm } from "./components/View/Order.ts";
+import { OrderForm, ContactsForm } from "./components/View/Order.ts";
+import { SuccessModal } from './components/View/Success.ts'
 
 // инициализация API и системы событий
 const events = new EventEmitter();
@@ -42,6 +43,24 @@ events.on('catalog changed', () => {
                 catalogModel.setSelectedProduct(item);
                 events.emit('product:open', item);
             }});
+        switch (item.category) {
+            case 'софт-скил':
+                productGalleryView.productCategory.classList.add('card__category_soft');
+                break;
+            case 'хард-скил':
+                productGalleryView.productCategory.classList.add('card__category_hard');
+                break;
+            case 'кнопка':
+                productGalleryView.productCategory.classList.add('card__category_button');
+                break;
+            case 'дополнительное':
+                productGalleryView.productCategory.classList.add('card__category_additional');
+                break;
+            case 'другое':
+                productGalleryView.productCategory.classList.add('card__category_other');
+                break;
+        }
+        productGalleryView.imageLink = item.image;
         return productGalleryView.render(item);
     });
 });
@@ -55,13 +74,12 @@ const previewView = new ProductPreview(events, previewContainer);
 //отрисовываем карточку подробного описания товара
 events.on('selected product changed', () => {
     const selected = catalogModel.getSelectedProduct();
-    console.log(selected.price);
      if (selected.price === null) {
         previewView.deactivateButton();
         previewView.button = 'Недоступно';
     } else if (cartModel.checkCart(selected)) {
         previewView.activateButton();
-        previewView.button = 'Удалить';
+        previewView.button = 'Удалить из корзины';
     } else if (!cartModel.checkCart(selected)) {
         previewView.activateButton();
         previewView.button = 'В корзину';
@@ -103,7 +121,13 @@ const headerView = new Header(events, headerContainer);
 
 events.on('cart content change', () => {
     //перерисовыаем счетчик корзины в шапке
-    const cartQuantity = cartModel.getQuantity();
+    const cartQuantity: number = cartModel.getQuantity();
+    console.log(cartQuantity);
+    if (cartQuantity > 0) {
+        cartView.activateButton();
+    } else {
+        cartView.deactivateButton();
+    }
     headerView.counter = cartQuantity;
 
     //перерисовываем содержимое корзины 
@@ -151,3 +175,59 @@ events.on('payment:cash', () => {
     orderView.paymentsCashButton.classList.add('button_alt-active');
 })
 
+events.on('address: changed', (text: { address: string } ) => {
+   buyerModel.setAddress(text.address);
+})
+
+events.on('order change', () => {
+    orderView.formErrors = [buyerModel.validatePayment().validationMessage, buyerModel.validateAddress().validationMessage];
+    if (!buyerModel.validatePayment().validationMessage && !buyerModel.validateAddress().validationMessage) {
+        orderView.activateButton();
+    } else {
+        orderView.deactivateButton();
+    }
+})
+
+events.on('contacts change', () => {
+        contactsView.formErrors = [buyerModel.validateEmail().validationMessage, buyerModel.validatePhone().validationMessage];
+        if (!buyerModel.validateEmail().validationMessage && !buyerModel.validatePhone().validationMessage) {
+            contactsView.activateButton();
+        } else {
+            contactsView.deactivateButton();
+    }
+})
+
+events.on('email: changed', (text: { email: string } ) => {
+   buyerModel.setEmail(text.email);
+});
+
+events.on('phone: changed', (text: { phone: string } ) => {
+   buyerModel.setPhone(text.phone);
+})
+
+//создаем contacts
+const contactsView = new ContactsForm(events, cloneTemplate('#contacts'));
+
+events.on('order:submit', () => {
+    modalView.content = contactsView.render();
+})
+
+//создаем successView
+const successView = new SuccessModal(events, cloneTemplate('#success'));
+
+events.on('contacts:submit', () => {
+    const buyerData = buyerModel.getData();
+    const POSTData: PostOrderData = {
+    email: buyerData.email,
+    phone: buyerData.phone,
+    address: buyerData.address,
+    payment: buyerData.payment!,
+    total: cartModel.calculateTotalPrice(),
+    items: cartModel.getProductsFromCart().map(item => item.id)
+  };
+  successView.totalPrice = cartModel.calculateTotalPrice();
+  modalView.content = successView.render();
+  webLarekApi.postOrder(POSTData);
+  cartModel.clearCart();
+  buyerModel.clearData();
+})

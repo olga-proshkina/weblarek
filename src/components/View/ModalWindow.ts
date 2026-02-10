@@ -17,7 +17,15 @@ export class ModalWindow extends Component<IModal> {
 
         this.modalCloseButton.addEventListener('click', () => {
             this.events.emit('modal:close');
-        })
+        });
+
+        this.contentModal.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        this.container.addEventListener('click', () => {
+            this.events.emit('modal:close');
+        });
     }
     set content(data: HTMLElement) {
         this.contentModal.replaceChildren(data);
