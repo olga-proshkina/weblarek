@@ -11,7 +11,7 @@ export class Cart {
   // метод addToCart добавляет выбранный товар в корзину
   addToCart(product: IProduct) {
     this.cartProducts.push(product);
-    this.events.emit('cart content change');
+    this.events.emit("cart content change");
   }
 
   //метод removeFromCart удаляет выбранный товар из корзины
@@ -20,7 +20,7 @@ export class Cart {
       (item) => item === product,
     );
     this.cartProducts.splice(itemToRemove, 1);
-    this.events.emit('cart content change');
+    this.events.emit("cart content change");
   }
 
   //метод getQuantity считает количество товаров в корзине
@@ -50,6 +50,6 @@ export class Cart {
 
   clearCart() {
     this.cartProducts = [];
-    this.events.emit('cart content change');
+    this.events.emit("cart content change");
   }
 }

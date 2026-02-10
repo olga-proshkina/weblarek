@@ -18,7 +18,7 @@ export class MainCatalog {
   // метод setProducts сохраняет массив всех товаров на главной странице
   setProducts(items: IProduct[]) {
     this.products = items;
-    this.events.emit('catalog changed');
+    this.events.emit("catalog changed");
   }
 
   // метод getSelectedProduct позволяет получить товар выбранный пользователем
@@ -29,6 +29,6 @@ export class MainCatalog {
   // метод setSelectedProduct сохраняет товар выбранный пльзователем
   setSelectedProduct(product: IProduct) {
     this.selectedProduct = product;
-    this.events.emit('selected product changed');
+    this.events.emit("selected product changed");
   }
 }

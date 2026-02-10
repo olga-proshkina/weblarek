@@ -6,13 +6,12 @@ export class Buyer {
   protected address: string;
   protected email: string;
   protected phone: string;
-  
 
   constructor(protected events: IEvents) {
     this.payment = null;
-    this.address = '';
-    this.email = '';
-    this.phone = '';
+    this.address = "";
+    this.email = "";
+    this.phone = "";
   }
 
   //метод getData позволяет получить данные покупателя
@@ -72,21 +71,21 @@ export class Buyer {
   //методы setData сохраняют данные покупателя
   setPayment(payment: string | null) {
     this.payment = payment;
-    this.events.emit('order change');
+    this.events.emit("order change");
   }
 
   setAddress(address: string) {
     this.address = address;
-    this.events.emit('order change');
+    this.events.emit("order change");
   }
 
   setEmail(email: string) {
     this.email = email;
-    this.events.emit('contacts change');
+    this.events.emit("contacts change");
   }
 
   setPhone(phone: string) {
     this.phone = phone;
-    this.events.emit('contacts change');
+    this.events.emit("contacts change");
   }
 }
