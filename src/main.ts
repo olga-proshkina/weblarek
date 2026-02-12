@@ -67,8 +67,18 @@ async function fetchProducts(): Promise<IProduct[] | undefined> {
     }
   } catch (error) {
     console.error("Ошибка при загрузке данных о товарах:", error);
+    return [] as IProduct[];
   }
 }
+
+fetchProducts()
+  .then((products) => {
+    catalogModel.setProducts(products ?? [] as IProduct[]);
+  })
+  .catch((error) => {
+    console.error("Ошибка при загрузке данных о товарах:", error);
+    catalogModel.setProducts([] as IProduct[]);
+  });
 
 //создаем карточки товаров
 events.on("catalog changed", () => {
@@ -84,8 +94,6 @@ events.on("catalog changed", () => {
     return productGalleryView.render(item);
   });
 });
-
-catalogModel.setProducts((await fetchProducts()) ?? ([] as IProduct[]));
 
 //отрисовываем карточку подробного описания товара
 events.on("selected product changed", () => {
