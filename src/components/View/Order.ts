@@ -33,7 +33,8 @@ class Form<T> extends Component<T & IForm> {
       this.errors.innerHTML = error;
     }
   }
- set disableButton(value: boolean) {
+
+  set disableButton(value: boolean) {
     this.submitButton.disabled = value;
   }
 }
@@ -89,7 +90,7 @@ export class OrderForm extends Form<IForm> {
   }
 
   set address(value: string) {
-      this.inputAddressField.value = value;
+    this.inputAddressField.value = value;
   }
 }
 
@@ -126,8 +127,8 @@ export class ContactsForm extends Form<IForm> {
   set email(value: string) {
     this.inputEmailField.value = value;
   }
-  
+
   set phone(value: string) {
-    this.inputPhoneField.value = value; 
+    this.inputPhoneField.value = value;
   }
 }

@@ -36,12 +36,15 @@ export class ModalWindow extends Component<IModal> {
       this.close();
     });
   }
+
   set content(data: HTMLElement) {
     this.contentModal.replaceChildren(data);
   }
+
   show() {
     this.container.classList.add("modal_active");
   }
+
   close() {
     this.container.classList.remove("modal_active");
   }

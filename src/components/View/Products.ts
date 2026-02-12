@@ -65,19 +65,13 @@ export class ProductGalleryView extends Product<IProduct> {
         this.productCategory.classList.add("card__category_hard");
         break;
       case "кнопка":
-        this.productCategory.classList.add(
-          "card__category_button",
-        );
+        this.productCategory.classList.add("card__category_button");
         break;
       case "дополнительное":
-        this.productCategory.classList.add(
-          "card__category_additional",
-        );
+        this.productCategory.classList.add("card__category_additional");
         break;
       case "другое":
-        this.productCategory.classList.add(
-          "card__category_other",
-        );
+        this.productCategory.classList.add("card__category_other");
         break;
     }
   }
@@ -132,7 +126,7 @@ export class ProductPreview extends Product<IProduct> {
       "card__category_additional",
       "card__category_other",
     );
-     switch (category) {
+    switch (category) {
       case "софт-скил":
         this.productCategory.classList.add("card__category_soft");
         break;
@@ -140,19 +134,13 @@ export class ProductPreview extends Product<IProduct> {
         this.productCategory.classList.add("card__category_hard");
         break;
       case "кнопка":
-        this.productCategory.classList.add(
-          "card__category_button",
-        );
+        this.productCategory.classList.add("card__category_button");
         break;
       case "дополнительное":
-        this.productCategory.classList.add(
-          "card__category_additional",
-        );
+        this.productCategory.classList.add("card__category_additional");
         break;
       case "другое":
-        this.productCategory.classList.add(
-          "card__category_other",
-        );
+        this.productCategory.classList.add("card__category_other");
         break;
     }
   }
@@ -173,7 +161,7 @@ export class ProductPreview extends Product<IProduct> {
     this.productAddRemoveButton.textContent = text;
   }
 
-   set disableButton(value: boolean) {
+  set disableButton(value: boolean) {
     this.productAddRemoveButton.disabled = value;
   }
 }

@@ -38,7 +38,10 @@ const gallery = new Gallery(page);
 const previewView = new ProductPreview(events, cloneTemplate("#card-preview"));
 
 // создаем модальное окно
-const modalView = new ModalWindow(events, ensureElement("#modal-container", page));
+const modalView = new ModalWindow(
+  events,
+  ensureElement("#modal-container", page),
+);
 
 //создаем корзину
 const cartView = new CartView(events, cloneTemplate("#basket"));
@@ -58,7 +61,7 @@ const successView = new SuccessModal(events, cloneTemplate("#success"));
 //получаем данные о товарах с сервера
 async function fetchProducts(): Promise<IProduct[] | undefined> {
   try {
-    const response = await webLarekApi.getProducts(); 
+    const response = await webLarekApi.getProducts();
     if (response) {
       return response.items;
     }
@@ -75,15 +78,15 @@ events.on("catalog changed", () => {
       onClick: () => {
         catalogModel.setSelectedProduct(item);
         events.emit("product:open", item);
-      }
+      },
     });
     productGalleryView.imageLink = item.image;
     return productGalleryView.render(item);
   });
 });
 
-catalogModel.setProducts(await fetchProducts() ?? [] as IProduct[]);
-  
+catalogModel.setProducts((await fetchProducts()) ?? ([] as IProduct[]));
+
 //отрисовываем карточку подробного описания товара
 events.on("selected product changed", () => {
   const selected = catalogModel.getSelectedProduct();
@@ -114,8 +117,6 @@ events.on("cart button click", () => {
   } else cartModel.addToCart(selected);
   modalView.close();
 });
-
-
 
 events.on("cart content change", () => {
   //перерисовыаем счетчик корзины в шапке
@@ -205,8 +206,6 @@ events.on("buyer data change", () => {
   }
 });
 
-
-
 events.on("phone: changed", (text: { phone: string }) => {
   buyerModel.setPhone(text.phone);
 });
@@ -227,11 +226,9 @@ events.on("contacts:submit", () => {
   };
   successView.totalPrice = cartModel.calculateTotalPrice();
   modalView.content = successView.render();
-  webLarekApi.postOrder(POSTData)
-    .catch
-    (error => {
-      console.error("Ошибка при отправке данных заказа:", error);
-    });
+  webLarekApi.postOrder(POSTData).catch((error) => {
+    console.error("Ошибка при отправке данных заказа:", error);
+  });
   cartModel.clearCart();
   buyerModel.clearData();
 });
