@@ -39,6 +39,7 @@ export class CartView extends Component<ICart> {
   set totalPrice(total: number) {
     this.cartTotal.textContent = `${total} синапсов`;
   }
+
   set products(products: HTMLElement[] | HTMLElement | null) {
     this.productsCart.replaceChildren();
     if (products instanceof HTMLElement) {
@@ -49,10 +50,8 @@ export class CartView extends Component<ICart> {
       });
     }
   }
-  deactivateButton(): void {
-    this.cartOrderButton.disabled = true;
-  }
-  activateButton(): void {
-    this.cartOrderButton.disabled = false;
+
+  set disableButton(value: boolean) {
+    this.cartOrderButton.disabled = value;
   }
 }

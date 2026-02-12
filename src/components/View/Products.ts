@@ -57,10 +57,34 @@ export class ProductGalleryView extends Product<IProduct> {
   }
   set category(category: string) {
     this.productCategory.textContent = category;
+    switch (category) {
+      case "софт-скил":
+        this.productCategory.classList.add("card__category_soft");
+        break;
+      case "хард-скил":
+        this.productCategory.classList.add("card__category_hard");
+        break;
+      case "кнопка":
+        this.productCategory.classList.add(
+          "card__category_button",
+        );
+        break;
+      case "дополнительное":
+        this.productCategory.classList.add(
+          "card__category_additional",
+        );
+        break;
+      case "другое":
+        this.productCategory.classList.add(
+          "card__category_other",
+        );
+        break;
+    }
   }
   set imageLink(src: string) {
     this.productImage.src = CDN_URL + src;
   }
+
   set imageDescription(alt: string) {
     this.productImage.alt = alt;
   }
@@ -95,29 +119,62 @@ export class ProductPreview extends Product<IProduct> {
     );
 
     this.productAddRemoveButton.addEventListener("click", () => {
-      this.events.emit("cart: add / remove");
+      this.events.emit("cart button click");
     });
   }
+
   set category(category: string) {
     this.productCategory.textContent = category;
+    this.productCategory.classList.remove(
+      "card__category_soft",
+      "card__category_hard",
+      "card__category_button",
+      "card__category_additional",
+      "card__category_other",
+    );
+     switch (category) {
+      case "софт-скил":
+        this.productCategory.classList.add("card__category_soft");
+        break;
+      case "хард-скил":
+        this.productCategory.classList.add("card__category_hard");
+        break;
+      case "кнопка":
+        this.productCategory.classList.add(
+          "card__category_button",
+        );
+        break;
+      case "дополнительное":
+        this.productCategory.classList.add(
+          "card__category_additional",
+        );
+        break;
+      case "другое":
+        this.productCategory.classList.add(
+          "card__category_other",
+        );
+        break;
+    }
   }
+
   set imageLink(src: string) {
-    this.productImage.src = src;
+    this.productImage.src = CDN_URL + src;
   }
+
   set imageDescription(alt: string) {
     this.productImage.alt = alt;
   }
+
   set description(text: string) {
     this.productDescription.textContent = text;
   }
+
   set button(text: string) {
     this.productAddRemoveButton.textContent = text;
   }
-  deactivateButton() {
-    this.productAddRemoveButton.disabled = true;
-  }
-  activateButton() {
-    this.productAddRemoveButton.disabled = false;
+
+   set disableButton(value: boolean) {
+    this.productAddRemoveButton.disabled = value;
   }
 }
 
@@ -140,6 +197,7 @@ export class ProductCartView extends Product<IProduct> {
       this.productRemoveButton.addEventListener("click", actions.onClick);
     }
   }
+
   set index(index: number) {
     this.productIndex.textContent = String(index);
   }

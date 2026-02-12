@@ -4,6 +4,10 @@ import { Component } from "../base/Component";
 
 interface IForm {
   formErrors: string | null;
+  payment: string | null;
+  address: string;
+  email: string;
+  phone: string;
 }
 
 class Form<T> extends Component<T & IForm> {
@@ -29,11 +33,8 @@ class Form<T> extends Component<T & IForm> {
       this.errors.innerHTML = error;
     }
   }
-  deactivateButton() {
-    this.submitButton.disabled = true;
-  }
-  activateButton() {
-    this.submitButton.disabled = false;
+ set disableButton(value: boolean) {
+    this.submitButton.disabled = value;
   }
 }
 
@@ -76,6 +77,20 @@ export class OrderForm extends Form<IForm> {
       this.events.emit("order:submit");
     });
   }
+
+  set payment(payment: string) {
+    if (payment === "card") {
+      this.paymentCardButton.classList.add("button_alt-active");
+      this.paymentsCashButton.classList.remove("button_alt-active");
+    } else if (payment === "cash") {
+      this.paymentCardButton.classList.remove("button_alt-active");
+      this.paymentsCashButton.classList.add("button_alt-active");
+    }
+  }
+
+  set address(value: string) {
+      this.inputAddressField.value = value;
+  }
 }
 
 export class ContactsForm extends Form<IForm> {
@@ -106,5 +121,13 @@ export class ContactsForm extends Form<IForm> {
       e.preventDefault();
       this.events.emit("contacts:submit");
     });
+  }
+
+  set email(value: string) {
+    this.inputEmailField.value = value;
+  }
+  
+  set phone(value: string) {
+    this.inputPhoneField.value = value; 
   }
 }

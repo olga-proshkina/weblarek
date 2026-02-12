@@ -33,89 +33,81 @@ const buyerModel = new Buyer(events);
 const page = ensureElement<HTMLElement>(".page");
 const gallery = new Gallery(page);
 
+//создаем компоненты слоя представления
+//создаем карточку подробного описания товара
+const previewView = new ProductPreview(events, cloneTemplate("#card-preview"));
+
+// создаем модальное окно
+const modalView = new ModalWindow(events, ensureElement("#modal-container", page));
+
+//создаем корзину
+const cartView = new CartView(events, cloneTemplate("#basket"));
+
+//создаем header
+const headerView = new Header(events, ensureElement(".header", page));
+
+//создаем форму заказа
+const orderView = new OrderForm(events, cloneTemplate("#order"));
+
+//создаем contacts
+const contactsView = new ContactsForm(events, cloneTemplate("#contacts"));
+
+//создаем successView
+const successView = new SuccessModal(events, cloneTemplate("#success"));
+
 //получаем данные о товарах с сервера
-const products = await webLarekApi.getProducts();
-const productsData = products.items;
+async function fetchProducts(): Promise<IProduct[] | undefined> {
+  try {
+    const response = await webLarekApi.getProducts(); 
+    if (response) {
+      return response.items;
+    }
+  } catch (error) {
+    console.error("Ошибка при загрузке данных о товарах:", error);
+  }
+}
 
 //создаем карточки товаров
 events.on("catalog changed", () => {
-  gallery.content = productsData.map((item) => {
+  gallery.content = catalogModel.getProducts().map((item) => {
     const container = cloneTemplate("#card-catalog");
     const productGalleryView = new ProductGalleryView(container, {
       onClick: () => {
         catalogModel.setSelectedProduct(item);
         events.emit("product:open", item);
-      },
+      }
     });
-    switch (item.category) {
-      case "софт-скил":
-        productGalleryView.productCategory.classList.add("card__category_soft");
-        break;
-      case "хард-скил":
-        productGalleryView.productCategory.classList.add("card__category_hard");
-        break;
-      case "кнопка":
-        productGalleryView.productCategory.classList.add(
-          "card__category_button",
-        );
-        break;
-      case "дополнительное":
-        productGalleryView.productCategory.classList.add(
-          "card__category_additional",
-        );
-        break;
-      case "другое":
-        productGalleryView.productCategory.classList.add(
-          "card__category_other",
-        );
-        break;
-    }
     productGalleryView.imageLink = item.image;
     return productGalleryView.render(item);
   });
 });
 
-catalogModel.setProducts(productsData);
-
-//создаем карточку подробного описания товара
-const previewContainer = cloneTemplate("#card-preview");
-const previewView = new ProductPreview(events, previewContainer);
-
+catalogModel.setProducts(await fetchProducts() ?? [] as IProduct[]);
+  
 //отрисовываем карточку подробного описания товара
 events.on("selected product changed", () => {
   const selected = catalogModel.getSelectedProduct();
   if (selected.price === null) {
-    previewView.deactivateButton();
+    previewView.disableButton = true;
     previewView.button = "Недоступно";
   } else if (cartModel.checkCart(selected)) {
-    previewView.activateButton();
+    previewView.disableButton = false;
     previewView.button = "Удалить из корзины";
   } else if (!cartModel.checkCart(selected)) {
-    previewView.activateButton();
+    previewView.disableButton = false;
     previewView.button = "В корзину";
   }
   previewView.render(selected);
 });
 
-// создаем модальное окно
-const containerModal = ensureElement("#modal-container", page);
-const modalView = new ModalWindow(events, containerModal);
-
 events.on("product:open", () => {
   const selected = catalogModel.getSelectedProduct();
   modalView.show();
   modalView.content = previewView.render(selected);
+  previewView.imageLink = selected.image;
 });
 
-events.on("modal:close", () => {
-  modalView.close();
-});
-
-//создаем корзину
-const cartContainer = cloneTemplate("#basket");
-const cartView = new CartView(events, cartContainer);
-
-events.on("cart: add / remove", () => {
+events.on("cart button click", () => {
   const selected = catalogModel.getSelectedProduct();
   if (cartModel.checkCart(selected)) {
     cartModel.removeFromCart(selected);
@@ -123,31 +115,26 @@ events.on("cart: add / remove", () => {
   modalView.close();
 });
 
-//создаем header
-const headerContainer = ensureElement(".header", page);
-const headerView = new Header(events, headerContainer);
+
 
 events.on("cart content change", () => {
   //перерисовыаем счетчик корзины в шапке
   const cartQuantity: number = cartModel.getQuantity();
-  console.log(cartQuantity);
   if (cartQuantity > 0) {
-    cartView.activateButton();
+    cartView.disableButton = false;
   } else {
-    cartView.deactivateButton();
+    cartView.disableButton = true;
   }
   headerView.counter = cartQuantity;
 
   //перерисовываем содержимое корзины
-  let index: number = 0;
-  cartView.products = cartModel.getProductsFromCart().map((product) => {
+  cartView.products = cartModel.getProductsFromCart().map((product, index) => {
     const productCartView = new ProductCartView(cloneTemplate("#card-basket"), {
       onClick: () => {
         events.emit("cart: remove product", product);
       },
     });
-    index++;
-    productCartView.index = index;
+    productCartView.index = index + 1;
     return productCartView.render(product);
   });
 
@@ -165,30 +152,33 @@ events.on("cart: remove product", (product: IProduct) => {
   cartModel.removeFromCart(product);
 });
 
-//создаем order
-const orderView = new OrderForm(events, cloneTemplate("#order"));
-
 events.on("cart: order", () => {
   modalView.content = orderView.render();
 });
 
 events.on("payment:card", () => {
   buyerModel.setPayment("card");
-  orderView.paymentCardButton.classList.add("button_alt-active");
-  orderView.paymentsCashButton.classList.remove("button_alt-active");
 });
 
 events.on("payment:cash", () => {
   buyerModel.setPayment("cash");
-  orderView.paymentCardButton.classList.remove("button_alt-active");
-  orderView.paymentsCashButton.classList.add("button_alt-active");
+});
+
+events.on("email: changed", (text: { email: string }) => {
+  buyerModel.setEmail(text.email);
 });
 
 events.on("address: changed", (text: { address: string }) => {
   buyerModel.setAddress(text.address);
 });
 
-events.on("order change", () => {
+events.on("buyer data change", () => {
+  const buyerData = buyerModel.getData();
+  orderView.address = buyerData.address;
+  orderView.payment = buyerData.payment!;
+  contactsView.email = buyerData.email;
+  contactsView.phone = buyerData.phone;
+
   orderView.formErrors = [
     buyerModel.validatePayment().validationMessage,
     buyerModel.validateAddress().validationMessage,
@@ -197,13 +187,10 @@ events.on("order change", () => {
     !buyerModel.validatePayment().validationMessage &&
     !buyerModel.validateAddress().validationMessage
   ) {
-    orderView.activateButton();
+    orderView.disableButton = false;
   } else {
-    orderView.deactivateButton();
+    orderView.disableButton = true;
   }
-});
-
-events.on("contacts change", () => {
   contactsView.formErrors = [
     buyerModel.validateEmail().validationMessage,
     buyerModel.validatePhone().validationMessage,
@@ -212,29 +199,21 @@ events.on("contacts change", () => {
     !buyerModel.validateEmail().validationMessage &&
     !buyerModel.validatePhone().validationMessage
   ) {
-    contactsView.activateButton();
+    contactsView.disableButton = false;
   } else {
-    contactsView.deactivateButton();
+    contactsView.disableButton = true;
   }
 });
 
-events.on("email: changed", (text: { email: string }) => {
-  buyerModel.setEmail(text.email);
-});
+
 
 events.on("phone: changed", (text: { phone: string }) => {
   buyerModel.setPhone(text.phone);
 });
 
-//создаем contacts
-const contactsView = new ContactsForm(events, cloneTemplate("#contacts"));
-
 events.on("order:submit", () => {
   modalView.content = contactsView.render();
 });
-
-//создаем successView
-const successView = new SuccessModal(events, cloneTemplate("#success"));
 
 events.on("contacts:submit", () => {
   const buyerData = buyerModel.getData();
@@ -248,7 +227,11 @@ events.on("contacts:submit", () => {
   };
   successView.totalPrice = cartModel.calculateTotalPrice();
   modalView.content = successView.render();
-  webLarekApi.postOrder(POSTData);
+  webLarekApi.postOrder(POSTData)
+    .catch
+    (error => {
+      console.error("Ошибка при отправке данных заказа:", error);
+    });
   cartModel.clearCart();
   buyerModel.clearData();
 });

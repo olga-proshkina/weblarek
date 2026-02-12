@@ -66,26 +66,27 @@ export class Buyer {
     this.address = "";
     this.email = "";
     this.phone = "";
+    this.events.emit("buyer data change");
   }
 
   //методы setData сохраняют данные покупателя
   setPayment(payment: string | null) {
     this.payment = payment;
-    this.events.emit("order change");
+    this.events.emit("buyer data change");
   }
 
   setAddress(address: string) {
     this.address = address;
-    this.events.emit("order change");
+    this.events.emit("buyer data change");
   }
 
   setEmail(email: string) {
     this.email = email;
-    this.events.emit("contacts change");
+    this.events.emit("buyer data change");
   }
 
   setPhone(phone: string) {
     this.phone = phone;
-    this.events.emit("contacts change");
+    this.events.emit("buyer data change");
   }
 }

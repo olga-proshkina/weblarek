@@ -25,7 +25,7 @@ export class ModalWindow extends Component<IModal> {
     );
 
     this.modalCloseButton.addEventListener("click", () => {
-      this.events.emit("modal:close");
+      this.close();
     });
 
     this.contentModal.addEventListener("click", (event) => {
@@ -33,7 +33,7 @@ export class ModalWindow extends Component<IModal> {
     });
 
     this.container.addEventListener("click", () => {
-      this.events.emit("modal:close");
+      this.close();
     });
   }
   set content(data: HTMLElement) {
